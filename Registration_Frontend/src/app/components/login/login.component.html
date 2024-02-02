@@ -1,0 +1,31 @@
+<!-- login.component.html -->
+<div class="login-container" fxLayout="column" fxLayoutAlign="center center">
+    <mat-card class="login-card">
+      <mat-card-header>
+        <mat-card-title>Login</mat-card-title>
+      </mat-card-header>
+  
+      <mat-card-content>
+        <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+          <mat-form-field class="full-width">
+            <input matInput formControlName="username" placeholder="Username" name="username" required>
+            <mat-error *ngIf="loginForm.get('username')?.hasError('required') && loginForm.get('username')?.touched">{{getErrorMessage()}}</mat-error>
+            </mat-form-field>
+  
+          <mat-form-field class="full-width">
+            <input matInput formControlName="password" type="password" placeholder="Password" name="password" required>
+            <mat-error *ngIf="loginForm.get('password')?.hasError('required') && loginForm.get('password')?.touched">{{getErrorMessage()}}</mat-error>
+            <mat-error *ngIf="loginForm.get('password')?.hasError('minlength') && loginForm.get('password')?.touched">{{getErrorMinLengthMessage()}}</mat-error>
+          </mat-form-field>
+
+          <button mat-button type="submit" color="primary" [disabled]="!loginForm.valid">Login</button>
+        </form>
+      </mat-card-content>
+    </mat-card>
+    <div class="registration-link">
+      <p>Don't have an account?</p>
+      <a mat-button [routerLink]="['/registration']">Registration</a>
+    </div>
+  </div>
+  <div>{{loginForm.get('username')}}</div>
+  

@@ -1,0 +1,114 @@
+<!-- registration.component.html -->
+
+<form *ngIf="!isSuccessful" [formGroup]="registrationForm" (ngSubmit)="onSubmit()">
+<mat-stepper [linear]="isLinear" #stepper>
+  <mat-step label="Daten der Firma" [completed]="isStep1Valid()">
+    <form [formGroup]="registrationForm">
+      <div formGroupName="company">
+      <ng-template matStepLabel>Daten der Firma</ng-template>
+      <mat-form-field>
+        <mat-label>Name</mat-label>
+        <input matInput placeholder="Name" formControlName="name" required>
+        <mat-error *ngIf="registrationForm.get('company')?.get('name')?.hasError('required') && registrationForm.get('company')?.get('name')?.touched">{{getErrorMessage()}}</mat-error>
+      </mat-form-field>
+      <div formGroupName="branch">
+      <mat-form-field>
+        <mat-label>Branche</mat-label>
+        <mat-select formControlName="name" required>
+          @for (branch of branches; track branch) {
+            <mat-option [value]="branch.name">{{branch.name}}</mat-option>
+          }
+        </mat-select>
+        <mat-error *ngIf="registrationForm.get('company')?.get('branch')?.get('name')?.hasError('required') && registrationForm.get('company')?.get('branch')?.get('name')?.touched">{{getErrorMessage()}}</mat-error>
+      </mat-form-field>
+      </div>
+      </div>
+      <div>
+        <button mat-button matStepperNext [disabled]="!isStep1Valid()">Next</button>
+      </div>
+    </form>
+  </mat-step>
+  <mat-step [stepControl]="registrationForm" label="Daten des Nutzers" [completed]="isStep2Valid()">
+    <form [formGroup]="registrationForm">
+      <mat-form-field>
+        <mat-label>Name</mat-label>
+        <input matInput placeholder="Name" formControlName="firstName" required>
+        <mat-error *ngIf="registrationForm.get('firstName')?.hasError('required') && registrationForm.get('firstName')?.touched">{{getErrorMessage()}}</mat-error>
+      </mat-form-field>
+      <mat-form-field>
+        <mat-label>Vorname</mat-label>
+        <input matInput placeholder="Vorname" formControlName="lastName" required>
+        <mat-error *ngIf="registrationForm.get('lastName')?.hasError('required') && registrationForm.get('lastName')?.touched">{{getErrorMessage()}}</mat-error>
+      </mat-form-field>
+      <mat-form-field>
+        <mat-label>Nutzername</mat-label>
+        <input matInput placeholder="Nutzername" formControlName="username" required>
+        <mat-error *ngIf="registrationForm.get('username')?.hasError('required') && registrationForm.get('username')?.touched">{{getErrorMessage()}}</mat-error>
+        <mat-error *ngIf="registrationForm.get('username')?.hasError('uniqueUsername') && registrationForm.get('username')?.touched">{{getErrorUniqueUsernameMessage()}}</mat-error>
+      </mat-form-field>
+      <mat-form-field>
+        <mat-label>Passwort</mat-label>
+        <input matInput type="password" placeholder="Passwort" formControlName="password" required>
+        <mat-error *ngIf="registrationForm.get('password')?.hasError('required') && registrationForm.get('password')?.touched">{{getErrorMessage()}}</mat-error>
+        <mat-error *ngIf="registrationForm.get('password')?.hasError('minlength') && registrationForm.get('password')?.touched">{{getErrorMinLengthMessage()}}</mat-error> 
+      </mat-form-field>
+      <mat-form-field>
+        <mat-label>Passwort Wiederholung</mat-label>
+        <input matInput type="password" placeholder="Passwort Wiederholung" formControlName="confirmPassword" required>
+        <mat-error *ngIf="registrationForm.get('confirmPassword')?.hasError('required') && registrationForm.get('confirmPassword')?.touched">{{getErrorMessage()}}</mat-error>
+        <mat-error *ngIf="registrationForm.get('confirmPassword')?.getError('passwordConfirm') && registrationForm.get('confirmPassword')?.touched">{{getErrorConfirmationMessage()}}</mat-error> 
+      </mat-form-field>
+      <mat-form-field>
+        <mat-label>E-Mail</mat-label>
+        <input matInput placeholder="E-Mail" formControlName="email">
+        <mat-error *ngIf="registrationForm.get('email')?.hasError('email') && registrationForm.get('firstName')?.touched">{{getErrorEmailMessage()}}</mat-error>
+      </mat-form-field>
+      <div>
+        <button mat-button matStepperPrevious>Back</button>
+        <button mat-button matStepperNext [disabled]="!isStep2Valid()">Next</button>
+      </div>
+    </form>
+  </mat-step>
+  <mat-step [stepControl]="registrationForm" label="Zusammenfassung" [completed]="isStep3Valid()">
+    <mat-card>
+      <mat-card-content>
+        Firma {{ registrationForm.get('company.name')?.value }} (Branche: {{ registrationForm.get('company.branch.name')?.value }}).<br>
+        Name: {{ registrationForm.get('firstName')?.value }} {{ registrationForm.get('lastName')?.value }} <br>
+        Nutzername: {{ registrationForm.get('username')?.value }} <br>
+        E-Mail: {{ registrationForm.get('email')?.value }}.
+      </mat-card-content>
+    </mat-card>
+    <form [formGroup]="registrationForm">
+      <mat-checkbox class="example-margin" formControlName="agreeWithAGB" [ngClass]="{'errorCheckbox': getCheckBoxAgreeWithAGBError()}" required>Einveständnis mit AGB</mat-checkbox>
+      <mat-error *ngIf="getCheckBoxAgreeWithAGBError()">{{getErrorCheckbocksMessage()}}</mat-error>
+      <mat-checkbox class="example-margin" formControlName="agreeWithDataProtection" [ngClass]="{'errorCheckbox': getCheckBoxAgreeWithDataProtectionError()}" required>Einveständnis mit Datenschutzerklärung</mat-checkbox>
+      <mat-error *ngIf="getCheckBoxAgreeWithDataProtectionError()">{{getErrorCheckbocksMessage()}}</mat-error>
+      <div>
+        <button mat-button matStepperPrevious>Back</button>
+        <button mat-button matStepperNext [disabled]="!isStep3Valid()"> Next</button>
+      </div>
+    </form>
+  </mat-step>
+  <mat-step>
+    <ng-template matStepLabel>Speichern</ng-template>
+    <p></p>
+    <div>
+      
+      <button mat-button matStepperPrevious>Back</button>
+      <button mat-button (click)="stepper.reset()">Reset</button>
+      <!-- Submit Button -->
+      <button mat-button type="submit" color="primary" [disabled]="!registrationForm.valid">Speichern</button>
+
+      {{registrationForm.getError('passwordConfirm')}}
+    </div>
+  </mat-step>
+</mat-stepper>
+</form>
+<mat-card *ngIf="isSuccessful" class="alert-card">
+  <mat-card-content align="center">
+    <h2>Sie haben sich erfolgreich registriert!</h2>
+  </mat-card-content>
+  <mat-card-content align="center">
+    <h1>Click <a [routerLink]="['/login']">here</a> to login</h1>
+  </mat-card-content>
+</mat-card>

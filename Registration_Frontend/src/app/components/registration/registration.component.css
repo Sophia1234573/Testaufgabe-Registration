@@ -1,0 +1,18 @@
+.mat-stepper-horizontal {
+    margin-top: 8px;
+  }
+  
+  .mat-mdc-form-field {
+    margin-top: 16px;
+  }
+
+.example-margin {
+  margin: 0 12px;
+}
+
+::ng-deep mat-card-content {
+  color: lightgrey;
+}
+
+
+  
